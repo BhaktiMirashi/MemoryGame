@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="viewport" content="width=
+    , initial-scale=1.0">
+  <title>Memory Food Game</title>
+  <!-- <link rel="stylesheet" href="index.css"> -->
+  <link rel="stylesheet" href="style.css">
+ 
+</head>
+
+<body>
+  <div class="game-over">
+    <p class="winorloss"></p>
+    <button class="restart">Restart</button>
+  </div>
+  <!-- <audio src="audio/cheek_pops-83378.mp3"></audio> -->
+  <div class="life">
+    <h1 >Lives: <span class="livesCount"></span>
+    </h1></div>
+
+  <section class="section"></section>
+ 
+ 
+ 
+
+
+
+  <script>
+
+    // Select the html tags 
+    let winorloss = document.querySelector(".winorloss")
+    let section = document.querySelector(".section");
+    let lives = document.querySelector(".livesCount");
+    let GameOver = document.querySelector(".game-over")
+    let GameOverBtn = document.querySelector(".restart")
+    const livesAudio = new Audio("audio/popSoundForLives.m4a.mp3");
+    let lifeCount = 5;
+    const sound = new Audio("audio/success_bell-6776.mp3")
+
+    // Update hearts display
+    function updateHearts() {
+      const heart = "<span style='margin-right: 5px;'>❤️</span>";
+      lives.innerHTML = heart.repeat(lifeCount);
+      lives.style.color = "maroon";
+    }
+
+
+
+    // generate the img object 
+    const getData = () => [
+      // { imgsrc: "./images/foodimages/baked_donut_recipe_featured.webp", name: "baked_donut" },
+      // { imgsrc: "./images/foodimages/cocoa-percentage-in-chocolate.jpg", name: "cocoa" },
+      { imgsrc: "./images/foodimages/colorful drink.jpg", name: "colorful" },
+      { imgsrc: "./images/foodimages/gems.jpg", name: "gems" },
+      { imgsrc: "./images/foodimages/Iced-instant-coffee.jpg", name: "coffee" },
+      { imgsrc: "./images/foodimages/macroons.webp", name: "macroons" },
+      { imgsrc: "./images/foodimages/rainbow_cake_20402_16x9.jpg", name: "rainbow_cake" },
+      { imgsrc: "./images/foodimages/startbucks.webp", name: "startbucks" },
+      // { imgsrc: "./images/foodimages/baked_donut_recipe_featured.webp", name: "baked_donut" },
+      // { imgsrc: "./images/foodimages/cocoa-percentage-in-chocolate.jpg", name: "cocoa" },
+      { imgsrc: "./images/foodimages/colorful drink.jpg", name: "colorful" },
+      { imgsrc: "./images/foodimages/gems.jpg", name: "gems" },
+      { imgsrc: "./images/foodimages/Iced-instant-coffee.jpg", name: "coffee" },
+      { imgsrc: "./images/foodimages/macroons.webp", name: "macroons" },
+      { imgsrc: "./images/foodimages/rainbow_cake_20402_16x9.jpg", name: "rainbow_cake" },
+      { imgsrc: "./images/foodimages/startbucks.webp", name: "startbucks" }
+
+    ];
+    // console.log(getData());
+
+
+    // Random cards 
+    const random = () => {
+      const cardData = getData()
+      return cardData.sort(() => Math.random() - 0.5)
+
+    }
+
+ 
+
+    // generate crads 
+
+    function CardsGenerator() {
+      let cardsData = random();
+      console.log(cardsData);
+      cardsData.forEach(items => {
+        // create html 
+        const card = document.createElement("div")
+        const face = document.createElement("img");
+        const back = document.createElement("div");
+        card.classList = "cards";
+        face.classList = "face";
+        back.classList = "back";
+        // add info to the img
+        face.src = items.imgsrc;
+        card.setAttribute("name", items.name)
+
+        // append this html to the section 
+        section.appendChild(card);
+        card.appendChild(face)
+        card.appendChild(back)
+
+        window.addEventListener("load", (event) => {
+
+          card.classList.toggle("toggle");
+          setTimeout(() => {
+            card.classList.remove("toggle");
+          }, 2000);
+
+
+        });
+
+        function togglebtn(e) {
+          card.classList.toggle("toggle");
+          checkCards(e)
+        }
+        card.addEventListener("click", togglebtn)
+      });
+
+      // check cards 
+      const checkCards = (e) => {
+
+
+        const val = e.target;
+        val.classList.add("flipped")
+        const flippedCards = document.querySelectorAll(".flipped")
+        const toggleCard = document.querySelectorAll(".toggle")
+        if (flippedCards.length === 2) {
+          if (flippedCards[0].getAttribute("name") === flippedCards[1].getAttribute("name")) {
+
+            console.log("match");
+
+            flippedCards.forEach((card) => {
+              card.classList.remove("flipped");
+              card.style.pointerEvents = "none"
+              setTimeout(() => {
+                card.style.opacity = "0";
+                card.style.transition = "opacity 0.5s";
+
+                sound.currentTime = 0;
+                sound.play()
+
+              }, 1000);
+
+            })
+          } else {
+            console.log("wrong");
+            flippedCards.forEach((card) => {
+              card.classList.remove("flipped");
+              setTimeout(() => {
+                card.classList.remove("toggle");
+              }, 1000);
+            })
+
+            lifeCount--;
+            updateHearts()
+            livesAudio.currentTime = 0;
+            livesAudio.play()
+
+
+           
+            if (lifeCount === 0) {
+              console.log("Restart");
+              section.style.pointerEvents = "none";
+              winorloss.textContent = `Game over`;
+              GameOver.style.display = "block"
+              GameOverBtn.addEventListener("click", () => {
+                location.reload()
+              })
+           
+            }
+
+
+          }
+        }
+      }
+      // to check if the player won 
+      setInterval(() => {
+        const areAllCardsOpaque = document.querySelectorAll('.cards[style*="opacity: 0"]').length;
+        if (areAllCardsOpaque === 12) {
+          
+          winorloss.textContent = `You Won!!`;
+          GameOver.style.display = "block"
+          GameOverBtn.addEventListener("click", () => {
+                location.reload()
+              })
+        }
+      }, 1000);
+
+    }
+
+    // restart 
+    const restart = () => {
+
+      let cardData = random();
+      let face = document.querySelectorAll(".face");
+      let cards = document.querySelectorAll(".cards");
+
+      cardData.forEach((items, index) => {
+        cards[index].classList.remove("toggle");
+
+        // randomize
+        setTimeout(() => {
+          cards[index].style.pointerEvents = "all";
+          face[index].src = items.imgsrc;
+          cards[index].setAttribute("name", items.name);
+        }, 2000);
+
+      });
+
+
+
+
+    }
+    CardsGenerator()
+    updateHearts()
+
+  </script>
+</body>
+
+</html>
